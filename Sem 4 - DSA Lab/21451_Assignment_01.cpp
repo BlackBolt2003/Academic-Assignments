@@ -18,254 +18,315 @@
 
 // code -----------------------
 
-# include <iostream>
+#include <iostream>
 using namespace std;
-# define _ NULL
+#define _ NULL
 
 // Node --------------------------------------
 
 template <class T>
-class node {
+class node
+{
 	T data;
 	node<T> *left;
 	node<T> *right;
 
 public:
 	// default constructor
-	node(){
+	node()
+	{
 		left = right = _;
 	}
 
 	// parameterized constructor
-	node(T data){
+	node(T data)
+	{
 		this->data = data;
 		left = right = _;
 	}
 
-	template <class B> friend class BST;
+	template <class B>
+	friend class BST;
 };
-
 
 // Binary Search Tree -------------------------
 
 template <class T>
-class BST {
+class BST
+{
 	node<T> *root;
+
 public:
 	// default constructor
-	BST(){
+	BST()
+	{
 		root = _;
 	}
 
 	// member functions
-	node<T>* get_root(){
+	node<T> *get_root()
+	{
 		return this->root;
 	}
 
 	void insert(T data);
-    void remove(T key);
+	void remove(T key);
 
-	void inorder_traversal(node<T>* curr);
-	void preorder_traversal(node<T>* curr);
-	void postorder_traversal(node<T>* curr);
+	void inorder_traversal(node<T> *curr);
+	void preorder_traversal(node<T> *curr);
+	void postorder_traversal(node<T> *curr);
 
 	bool empty();
 
-	bool search(int key, node<T>* &curr, node<T>* &parent);
+	bool search(int key, node<T> *&curr, node<T> *&parent);
 	T min_value();
 	T max_value();
 
 	void mirror(node<T> *curr);
 
-    int longest_path(node<T>* curr);
+	int longest_path(node<T> *curr);
 };
 
-template <class T> bool BST<T> :: empty(){
-	if (this->root == _) return true;
+template <class T>
+bool BST<T>::empty()
+{
+	if (this->root == _)
+		return true;
 	return false;
 }
 
-template <class T> void BST<T> :: insert(T data){
+template <class T>
+void BST<T>::insert(T data)
+{
 	node<T> *n = new node<T>(data);
 	// check if BST is empty
-	if (this->empty()) {
+	if (this->empty())
+	{
 		root = n;
 		return;
 	}
 
 	// non-empty BST
-	else {
+	else
+	{
 		// *curr = for traversal
 		// *parent = to keep track of parent
 
 		node<T> *curr = root;
-        node<T> *parent = _;
+		node<T> *parent = _;
 
-        search(data, curr, parent);
+		search(data, curr, parent);
 
-        if (curr != _){
-            cout << "Node" << data <<"already exists." << endl;
+		if (curr != _)
+		{
+			cout << "Node" << data << "already exists." << endl;
 			return;
-        }
+		}
 
-        else{
-            if(parent->data > data){
-                parent->left = n;
-            }
-            else{
-                parent->right = n;
-            }
-        }
+		else
+		{
+			if (parent->data > data)
+			{
+				parent->left = n;
+			}
+			else
+			{
+				parent->right = n;
+			}
+		}
 	}
 }
 
-template <class T> void BST<T> :: remove(T key){
-    // check empty tree
-    if(this->empty()){
-        cout << "BST is empty!" << endl;
-        return;
-    }
-    else{
-        node<T> *curr = root;
-        node<T> *parent = _;
+template <class T>
+void BST<T>::remove(T key)
+{
+	// check empty tree
+	if (this->empty())
+	{
+		cout << "BST is empty!" << endl;
+		return;
+	}
+	else
+	{
+		node<T> *curr = root;
+		node<T> *parent = _;
 
-        search(key, curr, parent);
+		search(key, curr, parent);
 
-        if (curr == _){
-            cout << "Node not found!" << endl;
-            return;
-        }
+		if (curr == _)
+		{
+			cout << "Node not found!" << endl;
+			return;
+		}
 
-        // case 1 - Both children are present
-        if (curr->left != _ && curr->right != _){
-            // nearest successor of current node
-            node<T> *cs = curr->right;
-            parent = curr;
+		// case 1 - Both children are present
+		if (curr->left != _ && curr->right != _)
+		{
+			// nearest successor of current node
+			node<T> *cs = curr->right;
+			parent = curr;
 
-            while(cs->left != _){
-                parent = cs;
-                cs = cs->left;
-            }
+			while (cs->left != _)
+			{
+				parent = cs;
+				cs = cs->left;
+			}
 
-            curr->data = cs->data;  //change todelete data into successor's data
-            curr = cs;              //make original cs as current node (todelete)
-        }
+			curr->data = cs->data; // change todelete data into successor's data
+			curr = cs;			   // make original cs as current node (todelete)
+		}
 
-        // case 2 - Only left child present
-        if (curr->left != _ && curr->right == _){
-            if(parent->left == curr){
-                parent->left = curr->left;
-            }
-            else{
-                parent->right = curr->left;
-            }
-            delete curr;
-            cout << "deleted!" << endl;
-        }
+		// case 2 - Only left child present
+		if (curr->left != _ && curr->right == _)
+		{
+			if (parent->left == curr)
+			{
+				parent->left = curr->left;
+			}
+			else
+			{
+				parent->right = curr->left;
+			}
+			delete curr;
+			cout << "deleted!" << endl;
+		}
 
-        // case 3 - Only right child present
-        if (curr->left == _ && curr->right != _){
-            if(parent->left == curr){
-                parent->left = curr->right;
-            }
-            else{
-                parent->right = curr->right;
-            }
-            delete curr;
-            cout << "deleted!" << endl;
-        }
+		// case 3 - Only right child present
+		if (curr->left == _ && curr->right != _)
+		{
+			if (parent->left == curr)
+			{
+				parent->left = curr->right;
+			}
+			else
+			{
+				parent->right = curr->right;
+			}
+			delete curr;
+			cout << "deleted!" << endl;
+		}
 
-        // case 4 - leaf node
-        if (curr->left == _ && curr->right == _){
-            if(parent->left == curr){
-                parent->left = _;
-            }
-            else{
-                parent->right = _;
-            }
-            delete curr;
-            cout << "deleted!" << endl;
-        }
-    }
+		// case 4 - leaf node
+		if (curr->left == _ && curr->right == _)
+		{
+			if (parent->left == curr)
+			{
+				parent->left = _;
+			}
+			else
+			{
+				parent->right = _;
+			}
+			delete curr;
+			cout << "deleted!" << endl;
+		}
+	}
 }
 
-template <class T> void BST<T> :: inorder_traversal(node<T>* curr){
-	if (curr != _){
+template <class T>
+void BST<T>::inorder_traversal(node<T> *curr)
+{
+	if (curr != _)
+	{
 		this->inorder_traversal(curr->left);
 		cout << curr->data << " ";
 		this->inorder_traversal(curr->right);
 	}
 }
 
-template <class T> void BST<T> :: preorder_traversal(node<T>* curr){
-	if(curr != _){
+template <class T>
+void BST<T>::preorder_traversal(node<T> *curr)
+{
+	if (curr != _)
+	{
 		cout << curr->data << " ";
 		this->preorder_traversal(curr->left);
 		this->preorder_traversal(curr->right);
 	}
 }
 
-template <class T> void BST<T> :: postorder_traversal(node<T>* curr){
-	if(curr != _){
+template <class T>
+void BST<T>::postorder_traversal(node<T> *curr)
+{
+	if (curr != _)
+	{
 		this->postorder_traversal(curr->left);
 		this->postorder_traversal(curr->right);
 		cout << curr->data << " ";
 	}
 }
 
-template <class T> bool BST<T> :: search(int key, node<T>* &curr, node<T>* &parent){
-	while (curr != _){
-		if (curr->data == key){
+template <class T>
+bool BST<T>::search(int key, node<T> *&curr, node<T> *&parent)
+{
+	while (curr != _)
+	{
+		if (curr->data == key)
+		{
 			return true;
 		}
 
-		else {
-            parent = curr;
-            if (key < curr->data){
-			    curr = curr->left;
-            }
-		    else {
-			    curr = curr->right;
-		    }
+		else
+		{
+			parent = curr;
+			if (key < curr->data)
+			{
+				curr = curr->left;
+			}
+			else
+			{
+				curr = curr->right;
+			}
 		}
 	}
 	return false;
 }
 
-template <class T> T BST<T> :: min_value(){
+template <class T>
+T BST<T>::min_value()
+{
 	// check if empty
-	if (this->empty()){
+	if (this->empty())
+	{
 		cout << "BST is empty";
 		return 0;
 	}
 
 	// traverse till left-most leaf node
 	node<T> *temp = root;
-	while (temp->left != _){
+	while (temp->left != _)
+	{
 		temp = temp->left;
 	}
 
 	return (temp->data);
 }
 
-template <class T> T BST<T> :: max_value(){
+template <class T>
+T BST<T>::max_value()
+{
 	// check if empty
-	if (this->empty()){
+	if (this->empty())
+	{
 		cout << "BST is empty";
 		return 0;
 	}
 
 	// traverse till right-most leaf node
 	node<T> *temp = root;
-	while (temp->right != _){
+	while (temp->right != _)
+	{
 		temp = temp->right;
 	}
 
 	return (temp->data);
 }
 
-template <class T> void BST <T> :: mirror(node<T> *curr){
-	if (curr != _){
+template <class T>
+void BST<T>::mirror(node<T> *curr)
+{
+	if (curr != _)
+	{
 		// swap children
 		node<T> *temp = curr->left;
 		curr->left = curr->right;
@@ -277,26 +338,28 @@ template <class T> void BST <T> :: mirror(node<T> *curr){
 	}
 }
 
-template <class T> int BST<T> :: longest_path(node<T> *curr)
+template <class T>
+int BST<T>::longest_path(node<T> *curr)
 {
-    if (curr == _) return 0;
+	if (curr == _)
+		return 0;
 
-    const int leftLen = longest_path(curr->left);
-    const int rightLen = longest_path(curr->right);
+	const int leftLen = longest_path(curr->left);
+	const int rightLen = longest_path(curr->right);
 
-    return (max(leftLen, rightLen) + 1);
+	return (max(leftLen, rightLen) + 1);
 }
 
-
 // driver code ---------------------------------
-int main(){
+int main()
+{
 	BST<int> myTree;
 
 	int choice = -1;
 	int temp = 0;
 
-
-	while (choice){
+	while (choice)
+	{
 		cout << "\n---------- MENU ----------\n"
 			 << "1. Insert Node\n"
 			 << "2. Traversal\n"
@@ -304,102 +367,114 @@ int main(){
 			 << "4. Minimum Value\n"
 			 << "5. Maximum Value\n"
 			 << "6. Mirror BST\n"
-             << "7. Delete Node\n"
-             << "8. Longest path length\n"
+			 << "7. Delete Node\n"
+			 << "8. Longest path length\n"
 			 << "0. Exit"
 			 << "\n--------------------------" << endl;
 		cout << "Enter choice = ";
 		cin >> choice;
 
-		switch(choice){
+		switch (choice)
+		{
 		case 0: // Exit
 			cout << "Thank you! :)" << endl;
 			break;
 
-		case 1 : // Insert Node
-            {cout << "Enter no. of values =";
-            int x;
-            cin >> x;
+		case 1: // Insert Node
+		{
+			cout << "Enter no. of values =";
+			int x;
+			cin >> x;
 			cout << "Enter values = ";
-            for(int i=0; i<x; i++){
-                cin >> temp;
-                myTree.insert(temp);
-            }
-            cout << "Inserted values" << endl;
-			break;}
+			for (int i = 0; i < x; i++)
+			{
+				cin >> temp;
+				myTree.insert(temp);
+			}
+			cout << "Inserted values" << endl;
+			break;
+		}
 
-		case 2 : // Traversal Sub-menu
-			{cout << "Types of traversal :"
-				<< "a. In-order\n"
-				<< "b. Pre-order\n"
-				<< "c. Post-order\n";
+		case 2: // Traversal Sub-menu
+		{
+			cout << "Types of traversal :"
+				 << "a. In-order\n"
+				 << "b. Pre-order\n"
+				 << "c. Post-order\n";
 
 			char subChoice = 'x';
 			cout << "Enter choice of traversal = ";
 			cin >> subChoice;
 
-			switch(subChoice){
-			case 'a' : // in-order traversal
+			switch (subChoice)
+			{
+			case 'a': // in-order traversal
 				cout << "In-order traversal = ";
 				myTree.inorder_traversal(myTree.get_root());
 				cout << endl;
 				break;
 
-			case 'b' : // pre-order traversal
+			case 'b': // pre-order traversal
 				cout << "Pre-order traversal = ";
 				myTree.preorder_traversal(myTree.get_root());
 				cout << endl;
 				break;
 
-			case 'c' : // post-order traversal
+			case 'c': // post-order traversal
 				cout << "Post-order traversal = ";
 				myTree.postorder_traversal(myTree.get_root());
 				cout << endl;
 				break;
 
-			default : // back
+			default: // back
 				break;
 			}
-			break;}
+			break;
+		}
 
-		case 3 : // Search a Node
-			{cout << "Enter value to search = ";
+		case 3: // Search a Node
+		{
+			cout << "Enter value to search = ";
 			cin >> temp;
-            node<int> *curr = myTree.get_root();
-            node<int> *parent = _;
-			if(myTree.search(temp, curr, parent)){
-                cout << temp << " found !" << endl;
-            } else {
-	            cout << temp << " not found !" << endl;
-            }
+			node<int> *curr = myTree.get_root();
+			node<int> *parent = _;
+			if (myTree.search(temp, curr, parent))
+			{
+				cout << temp << " found !" << endl;
+			}
+			else
+			{
+				cout << temp << " not found !" << endl;
+			}
 			cout << endl;
-			break;}
+			break;
+		}
 
-		case 4 : // Minimum value
+		case 4: // Minimum value
 			cout << "Minimum value = " << myTree.min_value() << endl;
 			break;
 
-		case 5 : // Maximum value
+		case 5: // Maximum value
 			cout << "Maximum value = " << myTree.max_value() << endl;
 			break;
 
-		case 6 : // Mirror BST
+		case 6: // Mirror BST
 			myTree.mirror(myTree.get_root());
 			cout << "BST mirrored." << endl;
 			break;
 
-        case 7 : // Delete a Node
+		case 7: // Delete a Node
 			cout << "Enter value to delete = ";
 			cin >> temp;
 			myTree.remove(temp);
 			cout << endl;
 			break;
 
-        case 8 : // No. of nodes in longest path
+		case 8: // No. of nodes in longest path
 			cout << "No. of nodes in longest path = " << myTree.longest_path(myTree.get_root()) << endl;
 			break;
 
-		default : // Forced exit
+		default: // Forced exit
 			cout << "Forced exit due to error ..." << endl;
 			exit(0);
 		}
