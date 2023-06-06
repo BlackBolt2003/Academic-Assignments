@@ -2,5 +2,9 @@
   "files.associations": {
     "*.ejs": "html",
     "iostream": "cpp"
-  }
+  },
+  "code-runner.runInTerminal": true,
+  "code-runner.saveAllFilesBeforeRun": true,
+  "code-runner.saveFileBeforeRun": true,
+  "C_Cpp.errorSquiggles": "disabled"
 }
