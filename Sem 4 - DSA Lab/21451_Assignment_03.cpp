@@ -194,11 +194,13 @@ bool TBST<T> :: search(int key, node<T>* &curr, node<T>* &parent){
 		else {
             parent = curr;
             if (key < curr->data){
-			    curr = curr->left;
+			    if (curr->lbit) curr = curr->left;
+				else return false;
             }
 		    else {
-			    curr = curr->right;
-		    }
+				if (curr->rbit) curr = curr->right;
+		    	else return false;
+			}
 		}
 	}
 	return false;

@@ -241,15 +241,15 @@ void OBST<T>::calculate_weight(double *p, double *q, int n, T *input)
 		}
 	}
 
-	// 	To check if calculations matrix values are correct or not :
-	//	for (int i=0; i<n+1; ++i){
-	//		for(int j=0; j<n+1; ++j){
-	//			cout << w[i][j] << "\t";
-	//			cout << c[i][j] << "\t";
-	//			cout << r[i][j] << "\t";
-	//		}
-	//		cout << "\n";
-	//	}
+		// To check if calculations matrix values are correct or not :
+		for (int i=0; i<n+1; ++i){
+			for(int j=0; j<n+1; ++j){
+				cout << w[i][j] << "\t";
+				// cout << c[i][j] << "\t";
+				// cout << r[i][j] << "\t";
+			}
+			cout << "\n";
+		}
 
 	this->root = this->create_tree(0, n, r, input);
 }

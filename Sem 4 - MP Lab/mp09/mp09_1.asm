@@ -1,3 +1,11 @@
+%macro scall 4
+mov rax,%1
+mov rdi,%2
+mov rsi,%3
+mov rdx,%4
+syscall
+%endmacro
+
 section .data
 
 global msg6,len6,scount,ncount,chacount,new,new_len
@@ -44,14 +52,6 @@ cnt: resb 2
 cnt2: resb 2
 cnt3: resb 2
 cha: resb 2
-
-%macro scall 4
-mov rax,%1
-mov rdi,%2
-mov rsi,%3
-mov rdx,%4
-syscall
-%endmacro
 
 section .text
 global _start
