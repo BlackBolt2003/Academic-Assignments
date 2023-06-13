@@ -73,12 +73,12 @@ public:
 
 	int Lchild(int i) // returns index of left child of node at index i
 	{
-		return (2 * 1 + 1);
+		return (2 * i + 1);
 	}
 
 	int Rchild(int i) // returns index of right child of node at index i
 	{
-		return (2 * 1 + 2);
+		return (2 * i + 2);
 	}
 
 	void swap(int a, int b)

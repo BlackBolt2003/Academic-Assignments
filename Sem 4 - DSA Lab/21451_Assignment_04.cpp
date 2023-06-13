@@ -252,18 +252,3 @@ void hashtable::remove(string key) {
 	}
 }
 // end ---------------------
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

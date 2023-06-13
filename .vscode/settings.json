@@ -1,7 +1,14 @@
 {
   "files.associations": {
     "*.ejs": "html",
-    "iostream": "cpp"
+    "iostream": "cpp",
+    "*.tcc": "cpp",
+    "fstream": "cpp",
+    "cstdlib": "cpp",
+    "algorithm": "cpp",
+    "functional": "cpp",
+    "iosfwd": "cpp",
+    "iomanip": "cpp"
   },
   "code-runner.runInTerminal": true,
   "code-runner.saveAllFilesBeforeRun": true,

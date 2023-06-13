@@ -115,7 +115,6 @@ public:
     node *RL(node *p)
     {
         node *pr = p->rc;
-        // node *prl = pr->rc;
         node *prl = pr->lc;
 
         pr->lc = prl->rc;
