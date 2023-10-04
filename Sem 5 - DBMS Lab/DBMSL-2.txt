@@ -1,0 +1,93 @@
+DBMSL-2
+
+create table dept(
+dept_id int not null primary key,
+dept_name varchar(20),
+dept_location varchar(20)
+);
+
+create table employee(
+emp_id int not null primary key,
+dept_id int not null,
+emp_fname varchar(20),
+emp_lname varchar(20),
+emp_position varchar(20),
+emp_salary int,
+emp_joindate date,
+foreign key(dept_id) references dept(dept_id) on delete cascade
+);
+
+create table project(
+proj_id int not null primary key,
+dept_id int not null,
+proj_name varchar(20),
+proj_location varchar(20),
+proj_cost int,
+proj_year year,
+foreign key(dept_id) references dept(dept_id) on delete cascade
+);
+
+< 2 >
+
+select * from employee
+where
+dept_id in (select dept_id from dept where dept_name in ("Computer", "IT"))
+and
+(emp_fname like "p%" or emp_fname like "h%");
+
+< 3 >
+
+select count(distinct emp_position) from employee;
+
+< 4 >
+
+update employee
+set emp_salary = emp_salary * 1.1
+where year(emp_joindate) < 2022;
+
+< 5 > 
+
+delete from dept
+where dept_location = "Denver";
+
+< 6 >
+
+select proj_name from project
+where proj_location = "India";
+
+< 7 >
+
+select * from project
+where proj_cost between 50000 and 90000;
+
+< 8 >
+
+select * from project order by proj_cost desc limit 1;
+
+select avg(proj_cost) from project;
+
+< 9 >
+
+select emp_id, emp_fname, emp_lname from employee order by emp_lname desc;
+
+< 10 >
+
+select proj_name, proj_location, proj_cost from project
+where proj_year in (2022);
+
+< views >
+
+create view deptView
+as select * from dept;
+
+create view employeeView
+as select emp_id, dept_id, emp_fname, emp_lname from employee;
+
+create view projectView 
+as select proj_id, dept_id, proj_name from project;
+
+< index >
+
+explain select * from employee where emp_fname like "j%" or emp_fname like "s%";
+create index emp_fname on employee(emp_fname);
+explain select * from employee where emp_fname like "j%" or emp_fname like "s%";
