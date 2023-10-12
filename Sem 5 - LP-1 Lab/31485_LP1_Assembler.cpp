@@ -75,7 +75,7 @@ public:
 
 	int searchIndex(string key){
 		for(int i=0; i<size; i++){
-			if(table->first == key){
+			if(table[i].first == key){
 				return i;
 			}
 		}
@@ -140,7 +140,7 @@ public:
 
 	int searchIndex(string key){
 		for(int i=0; i<size; i++){
-			if(table->first == key){
+			if(table[i].first == key){
 				return i;
 			}
 		}
@@ -249,7 +249,7 @@ public:
 		// Assembler Directives
 
 		table.push_back(Mnemonic("START", "AD", 1));
-		table.push_back(Mnemonic("STOP", "AD", 2));
+		table.push_back(Mnemonic("END", "AD", 2));
 
 		table.push_back(Mnemonic("ORIGIN", "AD", 3));
 		table.push_back(Mnemonic("EQU", "AD", 4));
@@ -398,11 +398,12 @@ public:
 		pooltab.print();
 		//
 
-		while(!fin.eof()){
+		while(true){
 			// input expression from input file
 			string loc;
 			getline(fin, loc, '\n');
-			cout << "> " << loc << endl;
+			cout << "\n> " << loc << endl;
+			IC << LC << "> ";
 
 			// Extract tokens
 			Expression exp(loc, mot);
@@ -414,9 +415,55 @@ public:
 			string instrType = mot.get_opcode(exp.mnemonic);
 			int instrNum = mot.get_opcode_num(exp.mnemonic);
 
+			if(exp.mnemonic == "END"){
+				//Process literals
+				int index = pooltab.getValue();
+
+				while(index < littab.getPtr()){
+					//add address of literal in LITTAB
+					string literal = littab.getLiteralAtIndex(index);
+					littab.add_address(literal, LC);
+
+					//generate IC
+					IC << "(" << instrType << "," << instrNum << ") ";
+					cout << "(" << instrType << "," << instrNum << ") ";		//----
+
+					IC << "(DL,2) ";
+					cout << "(DL,2) ";		//----
+
+					//obtain value of literal
+					IC << "(C,"; 
+					for(int i=2; i<literal.length()-1; i++){
+						IC << literal[i];
+					}
+
+					cout << "(C,";		//----
+					for(int i=2; i<literal.length()-1; i++){
+						cout << literal[i];
+					}
+					
+					//go to next loc and next literal in LITTAB
+					LC++;
+					index++;
+				}
+
+				pooltab.insert(littab.getPtr());
+
+				//Generate IC
+				IC << "(" << instrType << "," << instrNum << ") ";
+				cout << "(" << instrType << "," << instrNum << ") ";		//----
+
+				break;
+			}
+
 			if(exp.label != "NULL"){
-				// Label exists
-				symtab.add_symbol(exp.label, LC);
+				// Label
+				if(symtab.searchIndex(exp.label) == -1){
+					symtab.add_symbol(exp.label, LC);
+				}
+
+				IC << "(S," << symtab.searchIndex(exp.label) << ") ";
+				cout << "(S," << symtab.searchIndex(exp.label) << ") ";		//----
 			}
 
 			if(exp.mnemonic == "LTORG"){
@@ -452,7 +499,7 @@ public:
 					LC++;
 					index++;
 				}
-
+				LC--;
 				pooltab.insert(littab.getPtr());
 			}
 
@@ -475,26 +522,31 @@ public:
 					IC << "(C," << exp.op1 << ") ";
 					cout << "(C," << exp.op1 << ") ";		//----
 				}
+				IC << endl;
+				cout << endl;
+				continue;
 			}
 
 			if (exp.mnemonic == "EQU"){
 				if(symtab.searchIndex(exp.label) == -1){
 					symtab.add_symbol(exp.label, stoi(exp.op1));
 				}
-
-				//generate IC
-				IC << "(" << instrType << "," << instrNum << ") ";
-				cout << "(" << instrType << "," << instrNum << ") ";		//----
+				// no IC, only reflected in SYMTAB
 			}
 
 			if(instrType == "DL"){
-				// IC for symbol
-
+				// IC for symbol handled by Label block -
 
 				// declarative statement
 				if(exp.mnemonic == "DS"){
 					int size = stoi(exp.op1);
-					LC = LC + size;
+					if(symtab.searchIndex(exp.label) == -1){
+						symtab.add_symbol(exp.label, LC);
+					}
+					else{
+						symtab.add_address(exp.label, LC);
+					}
+					LC = LC + size - 1;
 				}
 				else{
 					LC = LC + 1;
@@ -503,11 +555,14 @@ public:
 				//generate IC
 				IC << "(" << instrType << "," << instrNum << ") ";
 				cout << "(" << instrType << "," << instrNum << ") ";	//----
+
+				//operand is a constant
+				IC << "(C," << exp.op1 << ") ";
+				cout << "(C," << exp.op1 << ") ";	//----
 			}
 
 			if(instrType == "IS"){
 				// imperative statement
-				LC = LC + 1;
 
 				// generate IC
 				IC << "(IS," << instrNum << ") ";
@@ -560,51 +615,13 @@ public:
 					}
 				}
 			}
-
-			if(exp.mnemonic == "END"){
-				//Process literals
-				int index = pooltab.getValue();
-
-				while(index < littab.getPtr()){
-					//add address of literal in LITTAB
-					string literal = littab.getLiteralAtIndex(index);
-					littab.add_address(literal, LC);
-
-					//generate IC
-					IC << "(" << instrType << "," << instrNum << ") ";
-					cout << "(" << instrType << "," << instrNum << ") ";		//----
-
-					IC << "(DL,2) ";
-					cout << "(DL,2) ";		//----
-
-					//obtain value of literal
-					IC << "(C,"; 
-					for(int i=2; i<literal.length()-1; i++){
-						IC << literal[i];
-					}
-
-					cout << "(C,";		//----
-					for(int i=2; i<literal.length()-1; i++){
-						cout << literal[i];
-					}
-					
-					//go to next loc and next literal in LITTAB
-					LC++;
-					index++;
-				}
-
-				pooltab.insert(littab.getPtr());
-
-				//Generate IC
-				IC << "(" << instrType << "," << instrNum << ") ";
-				cout << "(" << instrType << "," << instrNum << ") ";		//----
-			}
 			IC << endl;
 			cout << endl;
 
 			LC++;
 		}
 
+		cout << "end of pass 1\n" << endl;
 		symtab.print();
 		littab.print();
 		mot.print();
@@ -619,7 +636,7 @@ public:
 int main(){
 	Assembler Asmb;
 
-	// --------------
+	// Test Case 1 --------------
 
 	ofstream fout;
 	fout.open("input.txt");
@@ -632,9 +649,6 @@ int main(){
 		fout << "AGAIN MUL BREG , TERM" << endl;
 		fout << "MOVER CREG , TERM" << endl;
 		fout << "COMP CREG , N" << endl;
-		//
-		fout << "A EQU 100" << endl;
-		//
 		fout << "BC LE , AGAIN" << endl;
 		fout << "MOVEM BREG , RESULT" << endl;
 		fout << "LTORG" << endl;
