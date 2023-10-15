@@ -15,8 +15,8 @@
 ------------------------------------------------------------*/
 
 #include <iostream>
+#include <iomanip>
 #include <fstream>
-#include <map>
 #include <utility>
 #include <iterator>
 #include <string>
@@ -92,6 +92,22 @@ public:
 		}
 		cout << endl;
 	}
+
+	void writeToFile(string outputFile){
+		ofstream fout;
+		fout.open(outputFile);
+
+		fout << "\nSYMBOL TABLE\n\n";
+		fout << "Sr.No." << setw(10) << "Symbol" << setw(10) << "Address\n";
+		fout << "----------------------------" << endl;
+
+		for(int i=0; i<size; ++i){
+			fout <<	i << setw(10)
+					<< table[i].first << setw(10)
+					<< table[i].second << endl;
+		}
+		fout << endl;
+	}
 };
 
 class LITTAB {
@@ -157,6 +173,22 @@ public:
 		}
 		cout << endl;
 	}
+
+	void writeToFile(string outputFile){
+		ofstream fout;
+		fout.open(outputFile);
+
+		fout << "\nLITERAL TABLE\n\n";
+		fout << "Sr.No." << setw(10) << "Literal" << setw(10) << "Address\n";
+		fout << "----------------------------" << endl;
+
+		for(int i=0; i<size; ++i){
+			fout <<	i << setw(10)
+					<< table[i].first << setw(10)
+					<< table[i].second << endl;
+		}
+		fout << endl;
+	}
 };
 
 class POOLTABLE {
@@ -202,6 +234,20 @@ public:
 			cout <<	i << "\t" << table[i] << endl;
 		}
 		cout << endl;
+	}
+
+	void writeToFile(string outputFile){
+		ofstream fout;
+		fout.open(outputFile);
+
+		fout << "\nPOOLTABLE\n\n";
+		fout << "Sr.No." << setw(10) << "Entry\n";
+		fout << "----------------------------" << endl;
+
+		for(int i=0; i<size; ++i){
+			fout <<	i << setw(10) << table[i] << endl;
+		}
+		fout << endl;
 	}
 };
 
@@ -325,6 +371,29 @@ public:
 		}
 		cout << endl;
 	}
+
+	void writeToFile(string outputFile){
+	ofstream fout;
+	fout.open(outputFile);
+
+	fout << "\nMachine Opcode Table (MOT)\n\n";
+	fout << "Sr.No." << setw(10) << "Mnemonic" << setw(10) << "Opcode\n";
+	fout << "------------------------------------" << endl;
+
+	vector<Mnemonic> :: iterator it;
+	int i=0;
+
+	for(it = table.begin(); it != table.end(); it++){
+		fout <<	i++ << setw(10)
+				<< it->instr << setw(10)
+				<< "("
+				<< it->opcode
+				<< ","
+				<< it->num
+				<< ")" << endl;
+	}
+	fout << endl;
+}
 };
 
 class Expression {
@@ -376,7 +445,147 @@ public:
 	}
 };
 
+class IntermediateCode {
+public:
+	int address;
+	string instrType;
+	int instrNum;
+	string op1Type;
+	int op1Num;
+	string op2Type;
+	int op2Num;
+
+	IntermediateCode(){
+		address = instrNum = op1Num = op2Num = -1;
+		instrType = op1Type = op2Type = "NULL";
+	}
+
+	IntermediateCode(string loc){
+		address = instrNum = op1Num = op2Num = -1;
+		instrType = op1Type = op2Type = "NULL";
+
+		stringstream tokenStream(loc);
+		string token;
+		vector<string> tokenArray;
+		while(tokenStream >> token){
+			tokenArray.push_back(token);
+		}
+
+
+		// extract address
+		string addrString;
+
+		for(char c : tokenArray[0]){
+			if(c == '>') break;
+			addrString += c;
+		}
+		this->address = stoi(addrString);
+
+		// extract instruction
+		string instr;
+		string checkLabel = tokenArray[1];
+		bool labelFlag = false;
+		if(checkLabel[1] == 'S'){
+			tokenArray.erase(tokenArray.begin()+1, tokenArray.begin()+2);	// remove label
+		}	
+		
+		instr = tokenArray[1];
+
+		string instrString;	
+		string instrNumString;
+		bool flag = false;	// flag to check if instrNum is being read
+
+		for(char c : instr){
+			if(c == '(') continue;	// skip opening bracket
+			if(c == ',') {
+				flag = true;
+				this->instrType = instrString;
+				continue;
+			}
+			if(c == ')') {	// end of token
+				this->instrNum = stoi(instrNumString);
+				break;
+			}
+			if(!flag){	// instruction type		
+				instrString += c;
+			}
+			else{	// instruction number
+				instrNumString += c;
+			}
+		}
+		
+		// extract operands
+		if(tokenArray.size() == 3 || tokenArray.size() == 4){
+			// only 1 operand or 1st operand
+			string op1String;
+			string op1NumString;
+			flag = false;	// flag to check if op1Num is being read
+
+			for(char c : tokenArray[2]){
+				if(c == '(') continue;	// skip opening bracket
+				if(c == ',') {
+					flag = true;
+					this->op1Type = op1String;
+					continue;
+				}
+				if(c == ')') {	// end of token
+					this->op1Num = stoi(op1NumString);
+					break;
+				}
+				if(!flag){	// op1 type		
+					op1String += c;
+				}
+				else{	// op1 number
+					op1NumString += c;
+				}
+			}
+		}
+		if(tokenArray.size() == 4){
+			// 2nd operand
+			string op2String;
+			string op2NumString;
+			flag = false;	// flag to check if op2Num is being read
+
+			for(char c : tokenArray[3]){
+				if(c == '(') continue;	// skip opening bracket
+				if(c == ',') {
+					flag = true;
+					this->op2Type = op2String;
+					continue;
+				}
+				if(c == ')') {	// end of token
+					this->op2Num = stoi(op2NumString);
+					break;
+				}
+				if(!flag){	// op2 type		
+					op2String += c;
+				}
+				else{	// op2 number
+					op2NumString += c;
+				}
+			}
+
+		}
+	}
+
+	string print() {
+		string tempStr;
+
+		tempStr += to_string(this->address) + " ";
+		tempStr += this->instrType + " " + to_string(this->instrNum) + " ";
+		tempStr += this->op1Type + " " + to_string(this->op1Num) + " ";
+		tempStr += this->op2Type + " " + to_string(this->op2Num);
+
+		return tempStr;
+	}
+};
+
 class Assembler {
+	SYMTAB symtab;
+	LITTAB littab;
+	MOT mot;
+	POOLTABLE pooltab;
+
 public:
 	void pass1(string inputFile, string outputFile){
 		ifstream fin;
@@ -385,18 +594,7 @@ public:
 		ofstream IC;	//intermediate code file
 		IC.open(outputFile);
 
-		SYMTAB symtab;
-		LITTAB littab;
-		MOT mot;
-		POOLTABLE pooltab;
-		int LC=0;
-
-		//
-		symtab.print();
-		littab.print();
-		mot.print();
-		pooltab.print();
-		//
+		int LC=0;	//location counter
 
 		while(true){
 			// input expression from input file
@@ -630,16 +828,94 @@ public:
 		fin.close();
 		IC.close();
 	}
+
+	void pass2(string inputFile, string outputFile){
+		ifstream fin;
+		fin.open(inputFile);
+
+		ofstream fout;	//intermediate code file
+		fout.open(outputFile);
+
+		while(!fin.eof()){
+			// input expression from input file
+			string loc;
+			getline(fin, loc, '\n');
+
+			// Extract tokens
+			IntermediateCode ic(loc);
+			cout << ic.print() << endl;
+
+			fout << ic.address << "> ";
+
+			if(ic.instrType == "IS"){
+				// imperative statement
+				fout << "(" << ic.instrNum << ") ";
+				if (ic.instrNum == 0){
+					// STOP
+					fout << "(0) (0) ";
+				}
+				else{
+					// for other instructions
+					// operand 1
+					if(ic.op1Type == "RG"){
+						// register
+						fout << "(" << ic.op1Num << ") ";
+					}
+					else if(ic.op1Type == "S"){
+						// symbol
+						fout << "(0) ";
+						int symbolAddress = symtab.getAddressAtIndex(ic.op1Num);
+						fout << "(" << symbolAddress << ") ";
+					}
+					else{
+						fout << "(0) ";
+					}
+
+					// operand 2
+					if(ic.op2Type == "RG"){
+						// register
+						fout << "(" << ic.op2Num << ") ";
+					}
+					else if(ic.op2Type == "S"){
+						// symbol
+						int symbolAddress = symtab.getAddressAtIndex(ic.op2Num);
+						fout << "(" << symbolAddress << ") ";
+					}
+					else if(ic.op2Type == "L"){
+						// literal
+						int literalAddress = littab.getAddressAtIndex(ic.op2Num);
+						fout << "(" << literalAddress << ") ";
+					}
+				}
+			}
+			else if(ic.instrType == "AD"){
+				// assembler directive
+				if(ic.instrNum == 5){
+					// LTORG
+					fout << "(0) (0) ";
+					fout << "(" << ic.op2Num << ") ";
+				}
+				// ignore any other AD statement
+			}
+
+			// ignore any DL statement
+
+			// go to next line in output file
+			fout << endl;
+		}
+	}
+
+	void databases(string motFile,string symtabFile,string littabFile,string pooltabFile){
+		mot.writeToFile(motFile);
+		symtab.writeToFile(symtabFile);
+		littab.writeToFile(littabFile);
+		pooltab.writeToFile(pooltabFile);
+	}
 };
 
-
-int main(){
-	Assembler Asmb;
-
-	// Test Case 1 --------------
-
+void testCase1(string inputFile){
 	ofstream fout;
-	fout.open("input.txt");
+	fout.open(inputFile);
 
 	while(fout){
 		fout << "START 500" << endl;
@@ -662,13 +938,58 @@ int main(){
 	}
 
 	fout.close();
+}
 
-	// --------------
+void testCase2(string inputFile){
+	ofstream fout;
+	fout.open(inputFile);
 
-	string input = "input.txt";
-	string output = "output.txt";
+	while(fout){
+		fout << "START 100" << endl;
+		fout << "A DS 3" << endl;
+		fout << "L1 MOVER AREG , B" << endl;
+		fout << "MOVEM BREG , TERM" << endl;
+		fout << "ADD AREG , C" << endl;
+		fout << "MOVEM AREG , D" << endl;
+		fout << "D EQU A+1" << endl;
+		fout << "L2 PRINT D" << endl;
+		fout << "ORIGIN 600" << endl;
+		fout << "C DC 5" << endl;
+		fout << "ORIGIN 700" << endl;
+		fout << "STOP" << endl;
+		fout << "B DS 19" << endl;
+		fout << "END" << endl;
+		break;
+	}
 
-	Asmb.pass1(input, output);
+	fout.close();
+}
+
+int main(){
+	Assembler Asmb;
+
+	// Files to be generated
+	string inputFile = "input.txt";
+	string outputFile1 = "pass-1-output.txt";
+	string outputFile2 = "pass-2-output.txt";
+	string motFile = "mot.txt";
+	string symtabFile = "symtab.txt";
+	string littabFile = "littab.txt";
+	string pooltabFile = "pooltab.txt";
+
+	// Test Case 1 --------------
+
+	testCase1(inputFile);
+
+	// Test Case 2 --------------------------
+
+	// testCase2(inputFile);
+
+
+	// Assembler Driver Code
+	Asmb.pass1(inputFile, outputFile1);
+	Asmb.pass2(outputFile1, outputFile2);
+	Asmb.databases(motFile, symtabFile, littabFile, pooltabFile);
 
 	return 0;
 }
