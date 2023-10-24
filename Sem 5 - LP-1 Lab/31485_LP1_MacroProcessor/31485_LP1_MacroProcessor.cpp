@@ -23,11 +23,13 @@
 
 using namespace std;
 
-class OpcodeList {
+class OpcodeList
+{
 	vector<string> table;
 
 public:
-	OpcodeList() {
+	OpcodeList()
+	{
 		// Imperative Statements
 
 		table.push_back("STOP");
@@ -79,56 +81,69 @@ public:
 		table.push_back("ANOP");
 	}
 
-	bool check_if_mnemonic(string key) {
+	bool check_if_mnemonic(string key)
+	{
 		vector<string>::iterator it;
-		for (it = table.begin(); it != table.end(); it++) {
-			if (*it == key) {
+		for (it = table.begin(); it != table.end(); it++)
+		{
+			if (*it == key)
+			{
 				return true;
 			}
 		}
 		return false;
 	}
 
-	void print() {
+	void print()
+	{
 		cout << "\nOpcode List\n";
 		cout << "Sr.No.\tMnemonic\n";
 
 		vector<string>::iterator it;
 		int i = 0;
 
-		for (it = table.begin(); it != table.end(); it++) {
+		for (it = table.begin(); it != table.end(); it++)
+		{
 			cout << i++ << "\t" << *it << endl;
 		}
 		cout << endl;
 	}
 };
 
-class PNTAB {
+class PNTAB
+{
 	vector<string> table;
+
 public:
-	void addEntry(string pname) {
+	void addEntry(string pname)
+	{
 		table.push_back(pname);
 	}
 
-	void print() {
+	void print()
+	{
 		cout << "\nPNTAB\n";
-		cout << "Sr.No.\t" << "PName" << endl;
+		cout << "Sr.No.\t"
+			 << "PName" << endl;
 		cout << "-------------------------" << endl;
 
 		vector<string>::iterator it;
 		int i = 0;
 
-		for (it = table.begin(); it != table.end(); it++) {
+		for (it = table.begin(); it != table.end(); it++)
+		{
 			cout << i++ << "\t" << *it << endl;
 		}
 		cout << endl;
 	}
 
-	int getIndex(string ssname) {
+	int getIndex(string ssname)
+	{
 		vector<string>::iterator it;
 		int i = 0;
 
-		for (it = table.begin(); it != table.end(); it++) {
+		for (it = table.begin(); it != table.end(); it++)
+		{
 			if (*it == ssname)
 				return i;
 			i++;
@@ -137,31 +152,38 @@ public:
 	}
 };
 
-class KPDTAB {
+class KPDTAB
+{
 	vector<pair<string, string>> table;
+
 public:
-	void addEntry(string pname, string value) {
+	void addEntry(string pname, string value)
+	{
 		table.push_back(make_pair(pname, value));
 	}
 
-	void print() {
+	void print()
+	{
 		cout << "\nKPDTAB\n";
-		cout << "Sr.No.\t" << "KPname\t" << "Default Value" << endl;
+		cout << "Sr.No.\t"
+			 << "KPname\t"
+			 << "Default Value" << endl;
 		cout << "-------------------------" << endl;
 
 		vector<pair<string, string>>::iterator it;
 		int i = 0;
 
-		for (it = table.begin(); it != table.end(); it++) {
+		for (it = table.begin(); it != table.end(); it++)
+		{
 			cout << i++ << "\t" << it->first << "\t" << it->second << endl;
 		}
 		cout << endl;
 	}
 };
 
-class MNT {
+class MNT
+{
 public:
-
 	string name;
 	int PP;
 	int KP;
@@ -170,16 +192,19 @@ public:
 	int KPDTP;
 	int SSTP;
 
-	MNT() {
+	MNT()
+	{
 		name = "NULL";
 		PP = KP = EV = MDTP = KPDTP = SSTP = 0;
 	}
 
-	void processPrototype(string prototype, PNTAB &pntab, KPDTAB &kpdtab) {
+	void processPrototype(string prototype, PNTAB &pntab, KPDTAB &kpdtab)
+	{
 		string token;
 		stringstream tokenStream(prototype);
 		vector<string> tokenArray;
-		while (tokenStream >> token) {
+		while (tokenStream >> token)
+		{
 			tokenArray.push_back(token);
 		}
 
@@ -187,110 +212,145 @@ public:
 		name = tokenArray[0];
 
 		vector<string>::iterator itr;
-		for (itr = tokenArray.begin() + 1; itr != tokenArray.end(); itr++) {
+		for (itr = tokenArray.begin() + 1; itr != tokenArray.end(); itr++)
+		{
 			string formalParam;
 			string defaultParam;
 
 			bool flag = false;
 			bool defaultValue = false;
 
-			for (char c : *itr) {
-				if (c == '=') {	//start of default value
+			for (char c : *itr)
+			{
+				if (c == '=')
+				{ // start of default value
 					flag = true;
 					continue;
 				}
-				if (flag) {
+				if (flag)
+				{
 					defaultValue = true;
 					defaultParam += c;
-				} else
+				}
+				else
 					formalParam += c;
 			}
 
-			if (flag) {
+			if (flag)
+			{
 				// Keyword parameter
 				pntab.addEntry(formalParam);
 
-				if (defaultValue) {
+				if (defaultValue)
+				{
 					// Default parameter
 					kpdtab.addEntry(formalParam, defaultParam);
 					cout << "default value : " << defaultParam << endl;
-				} else {
+				}
+				else
+				{
 					// default value null
 					kpdtab.addEntry(formalParam, "NULL");
 				}
 				this->KP++;
-			} else {
+			}
+			else
+			{
 				// Positional parameter
 				pntab.addEntry(formalParam);
 				this->PP++;
 			}
-
 		}
 	}
 
-	void print() {
+	void print()
+	{
 		cout << "\nMNT\n";
-		cout << "Name" << "\t" << "#PP" << "\t" << "#KP" << "\t" << "#EV"
-				<< "\t" << "MDTP" << "\t" << "KPDTP" << "\t" << "SSTP" << "\t"
-				<< endl;
+		cout << "Name"
+			 << "\t"
+			 << "#PP"
+			 << "\t"
+			 << "#KP"
+			 << "\t"
+			 << "#EV"
+			 << "\t"
+			 << "MDTP"
+			 << "\t"
+			 << "KPDTP"
+			 << "\t"
+			 << "SSTP"
+			 << "\t"
+			 << endl;
 		cout << "--------------------------------------------------------------"
-				<< endl;
+			 << endl;
 
 		cout << name << "\t" << PP << "\t" << KP << "\t" << EV << "\t" << MDTP
-				<< "\t" << KPDTP << "\t" << SSTP << "\t" << endl;
-
+			 << "\t" << KPDTP << "\t" << SSTP << "\t" << endl;
 	}
-
 };
 
-class APTAB {
+class APTAB
+{
 	vector<string> table;
+
 public:
-	void addEntry(string apname) {
+	void addEntry(string apname)
+	{
 		table.push_back(apname);
 	}
 
-	void print() {
+	void print()
+	{
 		cout << "\nAPTAB\n";
-		cout << "Sr.No.\t" << "AP Name" << endl;
+		cout << "Sr.No.\t"
+			 << "AP Name" << endl;
 		cout << "-------------------------" << endl;
 
 		vector<string>::iterator it;
 		int i = 0;
 
-		for (it = table.begin(); it != table.end(); it++) {
+		for (it = table.begin(); it != table.end(); it++)
+		{
 			cout << i++ << "\t" << *it << endl;
 		}
 		cout << endl;
 	}
 };
 
-class EVNTAB {
+class EVNTAB
+{
 	vector<string> table;
+
 public:
-	void addEntry(string evname) {
+	void addEntry(string evname)
+	{
 		table.push_back(evname);
 	}
 
-	void print() {
+	void print()
+	{
 		cout << "\nEVNTAB\n";
-		cout << "Sr.No.\t" << "EV Name" << endl;
+		cout << "Sr.No.\t"
+			 << "EV Name" << endl;
 		cout << "-------------------------" << endl;
 
 		vector<string>::iterator it;
 		int i = 0;
 
-		for (it = table.begin(); it != table.end(); it++) {
+		for (it = table.begin(); it != table.end(); it++)
+		{
 			cout << i++ << "\t" << *it << endl;
 		}
 		cout << endl;
 	}
 
-	int getIndex(string ssname) {
+	int getIndex(string ssname)
+	{
 		vector<string>::iterator it;
 		int i = 0;
 
-		for (it = table.begin(); it != table.end(); it++) {
+		for (it = table.begin(); it != table.end(); it++)
+		{
 			if (*it == ssname)
 				return i;
 			i++;
@@ -299,128 +359,186 @@ public:
 	}
 };
 
-class EVTAB {
+class EVTAB
+{
 	vector<int> table;
+
 public:
-	void addEntry(int evValue) {
+	void addEntry(int evValue)
+	{
 		table.push_back(evValue);
 	}
 
-	void print() {
+	void print()
+	{
 		cout << "\nEVTAB\n";
-		cout << "Sr.No.\t" << "EV Value" << endl;
+		cout << "Sr.No.\t"
+			 << "EV Value" << endl;
 		cout << "-------------------------" << endl;
 
 		vector<int>::iterator it;
 		int i = 0;
 
-		for (it = table.begin(); it != table.end(); it++) {
+		for (it = table.begin(); it != table.end(); it++)
+		{
 			cout << i++ << "\t" << *it << endl;
 		}
 		cout << endl;
 	}
 };
 
-class Expression {
+class Expression
+{
 public:
 	string label;
 	string mnemonic;
 	string op1;
 	string op2;
 
-	Expression() {
+	Expression()
+	{
 		label = mnemonic = op1 = op2 = "NULL";
 	}
 
-	Expression(string loc, OpcodeList opcodeList) {
+	Expression(string loc, OpcodeList opcodeList)
+	{
 		label = mnemonic = op1 = op2 = "NULL";
 		string token;
 		stringstream tokenstream(loc);
 		vector<string> exp;
 
-		while (tokenstream >> token) {
+		while (tokenstream >> token)
+		{
 			exp.push_back(token);
 		}
 
 		// check for label
-		if (opcodeList.check_if_mnemonic(exp[0])) {
+		if (opcodeList.check_if_mnemonic(exp[0]))
+		{
 			// not a label
 			mnemonic = exp[0];
 			// check for number of operands
-			if (exp.size() == 2) {
+			if (exp.size() == 2)
+			{
 				op1 = exp[1];
-			} else if (exp.size() == 4) {
-				op1 = exp[1];	// 2nd is comma(,)
+			}
+			else if (exp.size() == 4)
+			{
+				op1 = exp[1]; // 2nd is comma(,)
 				op2 = exp[3];
 			}
-		} else {
+		}
+		else
+		{
 			label = exp[0];
 			mnemonic = exp[1];
 			// check for number of operands
-			if (exp.size() == 3) {
+			if (exp.size() == 3)
+			{
 				op1 = exp[2];
-			} else if (exp.size() == 5) {
-				op1 = exp[2];	// 3rd is comma(,)
+			}
+			else if (exp.size() == 5)
+			{
+				op1 = exp[2]; // 3rd is comma(,)
 				op2 = exp[4];
 			}
+		}
+
+		if (mnemonic == "AIF")
+		{
+			op1 = exp[1] + " " + exp[2] + " " + exp[3];
+			op1 = op1.substr(1, op1.length() - 2);
+			op2 = exp[5];
 		}
 	}
 };
 
-class MDT {
+class MDT
+{
 	vector<pair<int, Expression>> table;
+
 public:
-	void addEntry(int lc, Expression newEntry) {
+	void addEntry(int lc, Expression newEntry)
+	{
 		table.push_back(pair<int, Expression>(lc, newEntry));
 	}
 
-	void print() {
+	void setLastLabel(string label)
+	{
+		table.back().second.label = label;
+	}
+
+	void setLastOp1(string op1)
+	{
+		table.back().second.op1 = op1;
+	}
+
+	void setLastOp2(string op2)
+	{
+		table.back().second.op2 = op2;
+	}
+
+	void print()
+	{
 		cout << "\nMacro Definition Table (MDT)\n";
-		cout << "Sr.No.\t" << "Label\t" << "Opcode\t" << "Operand 1\t"
-				<< "Operand 2" << endl;
-		cout << "-------------------------" << endl;
+		cout << "Sr.No.\t"
+			 << "Label\t"
+			 << "Opcode\t"
+			 << "Op 1\t\t"
+			 << "Op 2" << endl;
+		cout << "------------------------------------------------------" << endl;
 
 		vector<pair<int, Expression>>::iterator it;
 
-		for (it = table.begin(); it != table.end(); it++) {
+		for (it = table.begin(); it != table.end(); it++)
+		{
 			cout << it->first << "\t" << it->second.label << "\t"
-					<< it->second.mnemonic << "\t" << it->second.op1 << "\t"
-					<< it->second.op2 << "\t" << endl;
+				 << it->second.mnemonic << "\t" << it->second.op1 << "\t\t"
+				 << it->second.op2 << endl;
 		}
 		cout << endl;
 	}
 };
 
-class SSNTAB {
+class SSNTAB
+{
 	vector<string> table;
+
 public:
-	void addEntry(string ssname) {
+	void addEntry(string ssname)
+	{
 		table.push_back(ssname);
 	}
 
-	void print() {
+	void print()
+	{
 		cout << "\nSSNTAB\n";
-		cout << "Sr.No.\t" << "SS Name" << endl;
+		cout << "Sr.No.\t"
+			 << "SS Name" << endl;
 		cout << "-------------------------" << endl;
 
 		vector<string>::iterator it;
 		int i = 0;
 
-		for (it = table.begin(); it != table.end(); it++) {
+		for (it = table.begin(); it != table.end(); it++)
+		{
 			cout << i++ << "\t" << *it << endl;
 		}
 		cout << endl;
 	}
 
-	int getSize() {
+	int getSize()
+	{
 		return table.size();
 	}
 
-	int getIndex(string ssname) {
+	int getIndex(string ssname)
+	{
 		vector<string>::iterator it;
 		int i = 0;
 
-		for (it = table.begin(); it != table.end(); it++) {
+		for (it = table.begin(); it != table.end(); it++)
+		{
 			if (*it == ssname)
 				return i;
 			i++;
@@ -429,29 +547,36 @@ public:
 	}
 };
 
-class SSTAB {
+class SSTAB
+{
 	vector<int> table;
+
 public:
-	void addEntry(int ssValue) {
+	void addEntry(int ssValue)
+	{
 		table.push_back(ssValue);
 	}
 
-	void print() {
+	void print()
+	{
 		cout << "\nSSTAB\n";
-		cout << "Sr.No.\t" << "MDT Entry #" << endl;
+		cout << "Sr.No.\t"
+			 << "MDT Entry #" << endl;
 		cout << "-------------------------" << endl;
 
 		vector<int>::iterator it;
 		int i = 0;
 
-		for (it = table.begin(); it != table.end(); it++) {
+		for (it = table.begin(); it != table.end(); it++)
+		{
 			cout << i++ << "\t" << *it << endl;
 		}
 		cout << endl;
 	}
 };
 
-class MacroProcessor {
+class MacroProcessor
+{
 	MNT mnt;
 	PNTAB pntab;
 	KPDTAB kpdtab;
@@ -464,76 +589,125 @@ class MacroProcessor {
 	OpcodeList opcodeList;
 
 public:
-	void pass1(string inputFile, string outputFile) {
+	void pass1(string inputFile, string outputFile)
+	{
 		ifstream fin;
 		fin.open(inputFile);
 
-		ofstream fout;	//intermediate code file
+		ofstream fout; // intermediate code file
 		fout.open(outputFile);
 
 		int MDTptr = 0;
 		int EV = 0;
 
-		while (!fin.eof()) {
+		while (!fin.eof())
+		{
 			// input expression from input file
 			string loc;
 			getline(fin, loc, '\n');
 			cout << "\n> " << loc << endl;
 
-			if (loc == "MACRO") {
+			if (loc == "MACRO")
+			{
 				getline(fin, loc, '\n');
 				cout << "\n> " << loc << endl;
 
 				mnt.processPrototype(loc, pntab, kpdtab);
 			}
 
-			else if (loc == "MEND") {
-				if (ssntab.getSize() == 0) {
+			else if (loc == "MEND")
+			{
+				if (ssntab.getSize() == 0)
+				{
 					mnt.SSTP = 0;
-				} else {
+				}
+				else
+				{
 					mnt.SSTP = ssntab.getSize();
 				}
 
-				if (mnt.KP == 0) {
+				if (mnt.KP == 0)
+				{
 					mnt.KPDTP = 0;
 				}
 				break;
 			}
 
-			else {
+			else
+			{
 				Expression exp(loc, opcodeList);
+				mdt.addEntry(MDTptr, exp);
 
-				if (exp.mnemonic == "LCL") {
+				if (exp.mnemonic == "LCL")
+				{
 					evntab.addEntry(exp.op1);
 					mnt.EV++;
-				} else {
+				}
+				else
+				{
 					// model statement
-					if (exp.label[0] == "&"
-							&& pntab.getIndex(exp.label) == -1) {
-
-					}
-
-					else if (exp.label[0] == "&"
-							&& evntab.getIndex(exp.label) == -1) {
-
-					}
-
-					int idx = ssntab.getIndex(exp.label);
 
 					// If label is a sequencing symbol
-
-					if (idx == -1) {
-						// SS is not present in SSNTAB
-						ssntab.addEntry(exp.label);
+					if (exp.label[0] == '.')
+					{
+						string specification;
+						int idx;
 						idx = ssntab.getIndex(exp.label);
-						sstab.addEntry(MDTptr);
+						if (idx == -1)
+						{
+							// Sequencing Symbol (SS) is not present in SSNTAB
+							ssntab.addEntry(exp.label);
+							sstab.addEntry(MDTptr);
+						}
+						specification = "(S, " + idx + ")";
+						mdt.setLastLabel(specification);
 					}
 
+					// operand - 1
+					if (exp.op1 != "NULL")
+					{
+						string specification;
+						int idx;
+						idx = pntab.getIndex(exp.op1);
+						if (exp.op1[0] == '&' && idx != -1)
+						{
+							// Parameter
+							specification = "(P, " + idx + ")";
+						}
+
+						idx = evntab.getIndex(exp.op1);
+						else if (exp.op1[0] == '&' && idx != -1)
+						{
+							// Expansion time variable (EV)
+							specification = "(E, " + idx + ")";
+						}
+
+						mdt.setLastOp1(specification);
+					}
+
+					// operand - 2
+					if (exp.op2 != "NULL")
+					{
+						string specification;
+						int idx;
+						idx = pntab.getIndex(exp.op2);
+						if (exp.op2[0] == '&' && idx != -1)
+						{
+							// Parameter
+							specification = "(P, " + idx + ")";
+						}
+
+						idx = evntab.getIndex(exp.op2);
+						else if (exp.op2[0] == '&' && idx != -1)
+						{
+							// Expansion time variable (EV)
+							specification = "(E, " + idx + ")";
+						}
+						mdt.setLastOp2(specification);
+					}
 				}
 
-				mdt.addEntry(MDTptr, exp);
 				mdt.print();
-
 			}
 
 			MDTptr++;
@@ -551,19 +725,21 @@ public:
 	}
 };
 
-void testCase1(string inputFile) {
+void testCase1(string inputFile)
+{
 	ofstream fout;
 	fout.open(inputFile);
 
-	while (fout) {
+	while (fout)
+	{
 		fout << "MACRO" << endl;
 		fout << "CLRMEM &P &Q &R1=AREG" << endl;
 		fout << "LCL &A" << endl;
 		fout << "&A SET 0" << endl;
-		fout << "MOVER &R1 ='0'" << endl;
-		fout << ".MORE MOVEM &R1 &P+&A" << endl;
+		fout << "MOVER &R1 , ='0'" << endl;
+		fout << ".MORE MOVEM &R1 , &P+&A" << endl;
 		fout << "&A SET &A+1" << endl;
-		fout << "AIF (&A NE &Q) .MORE" << endl;
+		fout << "AIF (&A NE &Q) , .MORE" << endl;
 		fout << "MEND" << endl;
 
 		break;
@@ -572,14 +748,15 @@ void testCase1(string inputFile) {
 	fout.close();
 }
 
-int main() {
+int main()
+{
 	MacroProcessor MP;
 
-// Files to be generated
+	// Files to be generated
 	string inputFile = "input.txt";
 	string outputFile1 = "output.txt";
 
-// Test Case 1 --------------
+	// Test Case 1 --------------
 
 	testCase1(inputFile);
 	MP.pass1(inputFile, outputFile1);
