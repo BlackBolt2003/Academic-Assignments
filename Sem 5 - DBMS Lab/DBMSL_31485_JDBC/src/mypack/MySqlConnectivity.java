@@ -21,10 +21,12 @@ public class MySqlConnectivity {
 			}
 
 			Scanner sc = new Scanner(System.in);
-			int choice = -1;
-			String tableName = "Employee";
+			String tableName = "Food";
+			boolean cont = true;
 
-			while (choice != 0) {
+			String query, fields, values, clause;
+
+			while (cont) {
 				System.out.println("\n--- MENU ---");
 				System.out.println("1. Select query");
 				System.out.println("2. Create table");
@@ -35,73 +37,129 @@ public class MySqlConnectivity {
 				System.out.println("------------\n");
 
 				System.out.println("Enter your choice:");
-				choice = sc.nextInt();
-				
+				int choice = 0;
+				if (sc.hasNext()) {
+					choice = sc.nextInt();
+				}
+
 				switch (choice) {
-				case 1: // Select Query
-					rs = st.executeQuery("select * from Employee");
+					case 1: // Select Query
 
-					while (!rs.isLast()) {
-						rs.next();
-						int empid = rs.getInt("Emp_id");
-						String empfname = rs.getString("Emp_fname");
-						String emplname = rs.getString("Emp_lname");
+						rs = st.executeQuery("select * from Food");
 
-						System.out.println("employee id: " + empid);
-						System.out.println("employee name: " + empfname + " " + emplname);
-					}
+						System.out.println("id \t name \t price");
 
-					System.out.println("END");
+						while (!rs.isLast()) {
+							rs.next();
+							int id = rs.getInt("id");
+							String name = rs.getString("name");
+							String price = rs.getString("price");
 
-					break;
+							System.out.println(id + " \t " + name + " \t " + price);
+						}
 
-				case 2: // Create table
+						break;
 
-					break;
+					case 2: // Create table
+						Scanner sc2 = new Scanner(System.in);
+						query = "create table  ";
 
-				case 3: // Insert Query
-					Scanner sc3 = new Scanner(System.in);
-					String query = "insert into " + tableName;
-					
-					System.out.println("Enter fields to insert into: (comma separated, enter * if all fields)");
-					String fields = sc3.nextLine();
-					
-					if(fields != "*") {
-						query += "(" + fields + ") ";
-					}
-					
-					System.out.println("Enter values to insert: (comma separated)");
-					String values = sc3.nextLine();
-					query += "values(" + values + ");";
+						System.out.println("Enter table name: ");
+						tableName = sc2.nextLine();
 
-					System.out.println("Query> " + query);
-					st.executeUpdate(query);
-					System.out.println("Inserted data!");
+						query += tableName + "(";
 
-					sc3.close();
-					break;
+						System.out.println("Enter fields: (e.g id int primary key, ...)");
+						fields = sc2.nextLine();
 
-				case 4: // Update Query
+						query += fields + ");";
 
-					break;
+						st.execute(query);
+						System.out.println("Created table " + tableName);
 
-				case 5: // Delete Query
+						sc2.close();
+						break;
 
-					break;
+					case 3: // Insert Query
+						Scanner sc3 = new Scanner(System.in);
+						query = "insert into " + tableName;
 
-				case 6: // Exit
-					System.out.println("Bye! :)");
-					choice = 0;
-					break;
+						System.out.println("Enter fields to insert into: (comma separated, enter * if all fields)");
+						fields = sc3.nextLine();
 
-				default: // Forced Exit
-					System.out.println("Forced Exit!");
+						if (fields != "*") {
+							query += "(" + fields + ") ";
+						}
 
-					choice = 0;
-					break;
+						System.out.println("Enter values to insert: (comma separated)");
+						values = sc3.nextLine();
+						query += "values(" + values + ");";
+
+						System.out.println("Query> " + query);
+						st.executeUpdate(query);
+						System.out.println("Inserted data!");
+
+						sc3.close();
+						break;
+
+					case 4: // Update Query
+						Scanner sc4 = new Scanner(System.in);
+						query = "update " + tableName;
+
+						System.out.println("Enter field to update: ");
+						fields = sc4.nextLine();
+
+						query += " set " + fields + " = ";
+
+						System.out.println("Enter new value: ");
+						values = sc4.nextLine();
+						query += values;
+
+						System.out.println("Enter condition: (e.g. name = 'pizza' | * if none)");
+						clause = sc4.nextLine();
+
+						if (clause != "*") {
+							query += " where " + clause + ";";
+						}
+
+						System.out.println("Query> " + query);
+						st.executeUpdate(query);
+						System.out.println("Updated data!");
+
+						sc4.close();
+						break;
+
+					case 5: // Delete Query
+						Scanner sc5 = new Scanner(System.in);
+						query = "delete from " + tableName;
+
+						System.out.println("Enter condition: (e.g. Emp_fname = 'pizza' | * if none)");
+						clause = sc5.nextLine();
+
+						if (clause != "*") {
+							query += " where " + clause + ";";
+						}
+
+						System.out.println("Query> " + query);
+						st.executeUpdate(query);
+						System.out.println("Deleted row!");
+
+						sc5.close();
+						break;
+
+					case 6: // Exit
+						System.out.println("Bye! :)");
+						cont = false;
+						break;
+
+					default: // Forced Exit
+						System.out.println("Forced Exit!");
+						cont = false;
+						System.exit(0);
+						break;
 				}
 			}
-			
+
 			sc.close();
 			st.close();
 			con.close();
