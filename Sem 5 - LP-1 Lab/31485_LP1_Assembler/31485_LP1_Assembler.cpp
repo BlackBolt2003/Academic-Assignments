@@ -10,7 +10,7 @@
  Design suitable Data structures and implement Pass-I and Pass-II of a two-pass
  assembler for pseudo-machine. Implementation should consist of a few instructions
  from each category and a few assembler directives. The output of Pass-I
- (intermediate code file and symbol table) should be input for Pass-I.
+ (intermediate code file and symbol table) should be input for Pass-II.
 
 ------------------------------------------------------------*/
 
@@ -80,7 +80,7 @@ public:
 			}
 		}
 		return -1;
-	}
+	} 
 
 	void print(){
 		cout << "\nSYMBOL TABLE" << endl;
@@ -918,7 +918,7 @@ void testCase1(string inputFile){
 	fout.open(inputFile);
 
 	while(fout){
-		fout << "START 500" << endl;
+		fout << "START 100" << endl;
 		fout << "READ N" << endl;
 		fout << "MOVER BREG , ='1'" << endl;
 		fout << "MOVEM BREG , TERM" << endl;
@@ -981,7 +981,7 @@ int main(){
 
 	testCase1(inputFile);
 
-	// Test Case 2 --------------------------
+	// Test Case 2 --------------
 
 	// testCase2(inputFile);
 

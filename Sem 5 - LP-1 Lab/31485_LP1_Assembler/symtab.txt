@@ -3,10 +3,10 @@ SYMBOL TABLE
 
 Sr.No.    Symbol  Address
 ----------------------------
-0         N       511
-1      TERM       532
-2     AGAIN       503
-3    RESULT       512
+0         N       111
+1      TERM       132
+2     AGAIN       103
+3    RESULT       112
 4                   0
 5                   0
 6                   0
