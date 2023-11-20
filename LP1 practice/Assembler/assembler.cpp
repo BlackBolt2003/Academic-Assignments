@@ -1201,7 +1201,7 @@ int main()
 	Assembler Asmb;
 
 	// Files to be generated
-	string inputFile1 = "input1.txt";
+	string inputFile = "input.txt";
 	string inputFile2 = "input2.txt";
 	string inputFile3 = "input3.txt";
 
@@ -1215,14 +1215,14 @@ int main()
 
 	// Test Case 1 --------------
 
-	// testCase1(inputFile);
+	testCase1(inputFile);
 
 	// Test Case 2 --------------
 
 	// testCase2(inputFile);
 
 	// Assembler Driver Code
-	Asmb.pass1(inputFile2, outputFile1);
+	Asmb.pass1(inputFile, outputFile1);
 	Asmb.pass2(outputFile1, outputFile2);
 	Asmb.databases(motFile, symtabFile, littabFile, pooltabFile);
 
