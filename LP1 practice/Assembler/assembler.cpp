@@ -765,8 +765,6 @@ public:
 				pooltab.insert(littab.getPtr());
 
 				// Generate IC
-				cout << "\n> " << loc << endl;
-				IC << LC << "> ";
 				IC << "(" << instrType << "," << instrNum << ") ";
 				cout << "(" << instrType << "," << instrNum << ") "; //----
 
@@ -871,11 +869,14 @@ public:
 				string token;
 				vector<string> tokens;
 
-				for(auto ch : operandStream){
-					if(ch != '+'){
+				for (auto ch : operandStream)
+				{
+					if (ch != '+')
+					{
 						token += ch;
 					}
-					else{
+					else
+					{
 						tokens.push_back(token);
 						token = "";
 					}
@@ -933,22 +934,18 @@ public:
 				// IC for symbol handled by Label block -
 
 				// declarative statement
-				if (exp.mnemonic == "DS")
+				int size = stoi(exp.op1);
+				if (symtab.searchIndex(exp.label) == -1)
 				{
-					int size = stoi(exp.op1);
-					if (symtab.searchIndex(exp.label) == -1)
-					{
-						symtab.add_symbol(exp.label, LC);
-					}
-					else
-					{
-						symtab.add_address(exp.label, LC);
-					}
-					LC = LC + size - 1;
+					symtab.add_symbol(exp.label, LC);
 				}
 				else
 				{
-					LC = LC + 1;
+					symtab.add_address(exp.label, LC);
+				}
+				if (exp.mnemonic == "DS")
+				{
+					LC = LC + size - 1;
 				}
 
 				// generate IC

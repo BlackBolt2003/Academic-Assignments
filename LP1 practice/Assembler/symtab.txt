@@ -7,7 +7,7 @@ Sr.No.    Symbol  Address
 1         X       110
 2         Y       112
 3      NEXT       103
-4         Z       113
+4         Z        -1
 5                   0
 6                   0
 7                   0
