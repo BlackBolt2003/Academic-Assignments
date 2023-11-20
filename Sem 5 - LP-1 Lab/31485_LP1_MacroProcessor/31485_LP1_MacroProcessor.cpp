@@ -659,7 +659,7 @@ public:
 							ssntab.addEntry(exp.label);
 							sstab.addEntry(MDTptr);
 						}
-						specification = "(S, " + idx + ")";
+						specification = "(S, " + to_string(idx) + ")";
 						mdt.setLastLabel(specification);
 					}
 
@@ -672,14 +672,12 @@ public:
 						if (exp.op1[0] == '&' && idx != -1)
 						{
 							// Parameter
-							specification = "(P, " + idx + ")";
+							specification = "(P, " + string(exp.op1) + ")";
 						}
-
-						idx = evntab.getIndex(exp.op1);
 						else if (exp.op1[0] == '&' && idx != -1)
 						{
 							// Expansion time variable (EV)
-							specification = "(E, " + idx + ")";
+							specification = "(E, " + to_string(idx) + ")";
 						}
 
 						mdt.setLastOp1(specification);
@@ -694,15 +692,18 @@ public:
 						if (exp.op2[0] == '&' && idx != -1)
 						{
 							// Parameter
-							specification = "(P, " + idx + ")";
+							specification = "(P, " + to_string(idx) + ")";
 						}
-
-						idx = evntab.getIndex(exp.op2);
-						else if (exp.op2[0] == '&' && idx != -1)
+						else
 						{
-							// Expansion time variable (EV)
-							specification = "(E, " + idx + ")";
+							idx = evntab.getIndex(exp.op2);
+							if (exp.op2[0] == '&' && idx != -1)
+							{
+								// Expansion time variable (EV)
+								specification = "(E, " + to_string(idx) + ")";
+							}
 						}
+						// Move this line outside the if-else blocks to ensure it's executed in all cases
 						mdt.setLastOp2(specification);
 					}
 				}
@@ -759,6 +760,7 @@ int main()
 	// Test Case 1 --------------
 
 	testCase1(inputFile);
+
 	MP.pass1(inputFile, outputFile1);
 
 	return 0;

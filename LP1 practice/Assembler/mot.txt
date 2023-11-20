@@ -1,0 +1,33 @@
+
+Machine Opcode Table (MOT)
+
+Sr.No.  Mnemonic   Opcode
+------------------------------------
+0      STOP         (IS,0)
+1       ADD         (IS,1)
+2       SUB         (IS,2)
+3      MULT         (IS,3)
+4     MOVER         (IS,4)
+5     MOVEM         (IS,5)
+6      COMP         (IS,6)
+7        BC         (IS,7)
+8       DIV         (IS,8)
+9      READ         (IS,9)
+10     PRINT         (IS,10)
+11     START         (AD,1)
+12       END         (AD,2)
+13    ORIGIN         (AD,3)
+14       EQU         (AD,4)
+15     LTORG         (AD,5)
+16      AREG         (RG,1)
+17      BREG         (RG,2)
+18      CREG         (RG,3)
+19        EQ         (CC,1)
+20        LT         (CC,2)
+21        GT         (CC,3)
+22        LE         (CC,4)
+23        GE         (CC,5)
+24        NE         (CC,6)
+25        DS         (DL,1)
+26        DC         (DL,2)
+

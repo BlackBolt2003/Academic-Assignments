@@ -1,0 +1,8 @@
+MOVER (P,-1) (P,-1) 
+ADD (P,-1) (P,-1) 
+MOVEM (P,-1) (P,-1) 
+MEND 
+MOVER (P,-1) (P,-1) 
+ADD (P,-1) (P,-1) 
+MOVEM (P,-1) (P,-1) 
+MEND 
