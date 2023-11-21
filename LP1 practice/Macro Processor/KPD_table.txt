@@ -1,0 +1,6 @@
+Keyword Parameter Default Table
+
+	Parameter	 Default Value
+-----------------------------------------------------
+0	E				AREG
+1	O				DREG

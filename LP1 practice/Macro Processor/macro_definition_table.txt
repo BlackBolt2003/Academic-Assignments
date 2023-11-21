@@ -1,8 +1,10 @@
-MOVER (P,-1) (P,-1) 
-ADD (P,-1) (P,-1) 
-MOVEM (P,-1) (P,-1) 
-MEND 
-MOVER (P,-1) (P,-1) 
-ADD (P,-1) (P,-1) 
-MOVEM (P,-1) (P,-1) 
-MEND 
+Macro Definition Table
+------------------------
+0	MOVER (P,2) , (P,0) 
+1	ADD (P,2) , (P,1) 
+2	MOVEM (P,2) , (P,0) 
+3	MEND
+3	4	MOVER (P,5) , (P,3) 
+5	ADD (P,5) , (P,4) 
+6	MOVEM (P,5) , (P,3) 
+7	MEND

@@ -1,0 +1,8 @@
+Parameter Name Table
+----------------------
+0	O
+1	N
+2	E
+3	T
+4	W
+5	O

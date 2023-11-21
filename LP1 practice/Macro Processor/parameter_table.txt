@@ -1,8 +1,0 @@
-ONE
-&O,
-&N,
-&E=AREG
-TWO
-&T,
-&W,
-&O=DREG

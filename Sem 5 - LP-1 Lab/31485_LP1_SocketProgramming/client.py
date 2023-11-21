@@ -17,6 +17,6 @@ while True:
     print(res.decode('utf-8'))
     
     if Input == "bye":
-    	ClientMultiSocket.close()
-    	print("Socket closed")
-    	break
+        ClientMultiSocket.close()
+        print("Socket closed")
+        break

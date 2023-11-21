@@ -1,205 +1,369 @@
-//============================================================================
-// Name        : macroprocessor_pass1.cpp
-// Author      : 31458
-// Version     :
-// Copyright   : Your copyright notice
-// Description : Hello World in C++, Ansi-style
-//============================================================================
-
-#include <bits/stdc++.h>
+#include <iostream>
+#include <vector>
+#include <sstream>
 #include <fstream>
+#include <utility>
+#include <map>
+
 using namespace std;
 
-class MNTvalues {
+string mntFile = "macro_name_table.txt";
+string mdtFile = "macro_definition_table.txt";
+string kpdtabFile = "KPD_table.txt";
+string pntabFile = "PN_table.txt";
+string aptabFile = "AP_table.txt";
+
+vector<string> OpcodeList = {"STOP", "ADD", "SUB", "MULT", "MOVER", "MOVEM", "COMP", "BC", "DIV", "READ", "PRINT", "START", "END", "ORIGIN", "EQU", "LTORG", "DS", "DC"};
+vector<string> RegisterList = {"AREG", "BREG", "CREG"};
+vector<string> ConditionalList = {"EQ", "LT", "GT", "LE", "GE", "NE"};
+
+bool checkOpcode(string key)
+{
+	for (string s : OpcodeList)
+	{
+		if (key == s)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+bool checkRegister(string key)
+{
+	for (string s : RegisterList)
+	{
+		if (key == s)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+bool checkConditional(string key)
+{
+	for (string s : ConditionalList)
+	{
+		if (key == s)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+class MNT_Entry
+{
+public:
+	string MacroName;
 	int PP;
 	int KP;
 	int MDTP;
 	int KPDTP;
 
-public:
-	MNTvalues() {
-		PP = 0;
-		KP = 0;
-		MDTP = 0;
-		KPDTP = 0;
+	MNT_Entry()
+	{
+		MacroName = "";
+		PP = KP = MDTP = KPDTP = 0;
 	}
-
-	friend class MacroProcessor;
 };
 
-class MacroProcessor {
-	vector<pair<string, MNTvalues>> MNT;
-	vector<pair<string, string>> KPDTAB;
-	vector<vector<string>> MDT;
-    vector<string> PNTAB;
-	fstream file;
-    fstream macro_name_table;
-    fstream keyword_parameter_table;
-    fstream macro_definition_table;
-    fstream parameter_table;
+void writeMNTfile(vector<MNT_Entry> MNT)
+{
+	ofstream fout;
+	fout.open(mntFile);
 
-public:
-	MacroProcessor() {
-		file.open("macro_input.txt", ios::in);
-		if (!file.is_open()) {
-			cout<<"Error opening sample file"<<endl;
-		}
+	fout << "Macro Name Table\n\n";
+	fout << "Name\t #PP\t #KP\t MDTP\t KPDTP\n";
+	fout << "-----------------------------------------------------\n";
 
-        macro_name_table.open("macro_name_table.txt", ios::out);
-		if (!macro_name_table.is_open()) {
-			cout<<"Error opening sample file"<<endl;
-		}
-
-        keyword_parameter_table.open("keyword_parameter_table.txt", ios::out);
-		if (!keyword_parameter_table.is_open()) {
-			cout<<"Error opening sample file"<<endl;
-		}
-
-        macro_definition_table.open("macro_definition_table.txt", ios::out);
-		if (!macro_definition_table.is_open()) {
-			cout<<"Error opening sample file"<<endl;
-		}
-
-        parameter_table.open("parameter_table.txt", ios::out);
-		if (!parameter_table.is_open()) {
-			cout<<"Error opening sample file"<<endl;
-		}
+	for (MNT_Entry entry : MNT)
+	{
+		fout << entry.MacroName << "\t\t"
+			 << entry.PP << "\t\t"
+			 << entry.KP << "\t\t"
+			 << entry.MDTP << "\t\t"
+			 << entry.KPDTP << endl;
 	}
 
-    int findParameter(string parameter, string name) {
-        int reference;
-        for (int i = 0; i < PNTAB.size(); i++) {
-            if (PNTAB[i] == name) {
-                reference = i;
-                break;
-            }
-        }
-        for (int i = reference; i < PNTAB.size(); i++) {
-            if (PNTAB[i] == parameter) {
-                return i - reference;
-            }
-        }
-        return -1;
-    }
+	fout.close();
+}
 
-	void passOne() {
-		vector<string> words;
-        vector<string> temp;
-		string line;
-        string name;
-		int kcounter = 0;
-		int pcounter = 0;
-		int mcounter = 0;
-		bool insideMacro = false;
-		bool firstLine = false;
-        MNTvalues m;
-		if (file.is_open()) {
-			while (!file.eof()) {
-				getline(file, line);
-				string w = "";
-				for (int i = 0;i < int(line.size()); i++) {
-					if (line[i] != ' ') {
-						w += line[i];
-					} else {
-						words.push_back(w);
-						w = "";
-					}
-				}
-				words.push_back(w);
-				if (words[0] == "MACRO"){
-					insideMacro = true;
-					firstLine = true;
-				} else if (firstLine && insideMacro) {
-                    name = words[0];
-                    PNTAB.push_back(name);
-					for (int i = 1; i < words.size(); i++) {
-						if (words[i].at(0) == '&') {
-							PNTAB.push_back(words[i]);
-							pcounter++;
-						} else if (words[i] == "=") {
-							if (i != words.size() - 1 && words[i + 1].at(0) != '&') {
-								KPDTAB.push_back({words[i - 1], words[i + 1]});
-								kcounter++;
-							} else if (i == words.size() - 1 || words[i + 1].at(0) == '&'){
-								KPDTAB.push_back({words[i - 1], ""});
-								kcounter++;
-							}
+void writePNTABfile(vector<string> PNTAB)
+{
+	ofstream fout;
+	fout.open(pntabFile);
+
+	int i = 0;
+
+	fout << "Parameter Name Table\n";
+	fout << "----------------------\n";
+
+	for (string entry : PNTAB)
+	{
+		fout << i++ << "\t" << entry << endl;
+	}
+
+	fout.close();
+}
+
+void writeAPTABfile(vector<string> APTAB)
+{
+	ofstream fout;
+	fout.open(aptabFile);
+
+	int i = 0;
+
+	fout << "Actual Parameter Table\n";
+	fout << "------------------------\n";
+
+	for (string entry : APTAB)
+	{
+		fout << i++ << "\t" << entry << endl;
+	}
+
+	fout.close();
+}
+
+void writeMDTfile(vector<string> MDT)
+{
+	ofstream fout;
+	fout.open(mdtFile);
+
+	fout << "Macro Definition Table\n";
+	fout << "------------------------\n";
+
+	for (string entry : MDT)
+	{
+		fout << entry << endl;
+	}
+
+	fout.close();
+}
+
+void writeKPDTABfile(map<string, string> KPDTAB)
+{
+	ofstream fout;
+	fout.open(kpdtabFile);
+
+	int i = 0;
+
+	fout << "Keyword Parameter Default Table\n\n";
+	fout << "\tParameter\t Default Value\n";
+	fout << "-----------------------------------------------------\n";
+
+	for (pair<string, string> entry : KPDTAB)
+	{
+		fout << i++ << "\t" << entry.first << "\t\t\t\t" << entry.second << endl;
+	}
+
+	fout.close();
+}
+
+void macro_pass_1(string inputFile)
+{
+	vector<string> PNTAB;
+	vector<MNT_Entry> MNT;
+	map<string, string> KPDTAB;
+	vector<string> APTAB;
+	vector<string> MDT;
+
+	int MacroCount = 0;
+
+	int MNTptr = -1;
+	int MDTptr = 0;
+	int KPDTptr = 0;
+	vector<int> PNTABptrs;
+	int currPNTABptr = 0;
+
+	ifstream fin;
+	fin.open(inputFile);
+
+	string loc;
+	string MDT_entry;
+
+	while (true)
+	{
+		getline(fin, loc, '\n');
+		cout << "=> " << loc << endl;
+
+		if (loc == "END")
+		{
+			break;
+		}
+
+		else if (loc == "MACRO")
+		{
+			// go to next line
+			getline(fin, loc, '\n');
+			cout << "=> " << loc << endl;
+
+			MNT.push_back(MNT_Entry());
+			MNTptr++;
+
+			stringstream ss(loc);
+			string token;
+
+			// process macro name
+			ss >> token;
+			MNT[MNTptr].MacroName = token;
+
+			// Set MDT pointer
+			MNT[MNTptr].MDTP = MDTptr;
+			MDTptr++;
+
+			// Set KPDT pointer
+			MNT[MNTptr].KPDTP = KPDTptr;
+
+			// process parameters
+			PNTABptrs.push_back(currPNTABptr);
+			while (ss >> token)
+			{
+				if (token != ",")
+				{
+					string Pname;
+					string Pvalue;
+					bool valueFlag = false;
+
+					for (auto ch : token)
+					{
+						if (ch == '&')
+							continue;
+
+						else if (ch == '=')
+						{
+							valueFlag = true;
+							continue;
+						}
+
+						else if (valueFlag)
+						{
+							Pvalue += ch;
+						}
+
+						else
+						{
+							Pname += ch;
 						}
 					}
-					if (kcounter != 0) {
-						m.KPDTP = KPDTAB.size() - kcounter + 1;
+					if (valueFlag)
+					{
+						// keyword parameter
+						MNT[MNTptr].KP++;
+						if (!Pvalue.empty())
+						{
+							// default value
+							KPDTAB.insert(pair<string, string>(Pname, Pvalue));
+							KPDTptr++;
+						}
 					}
-					m.KP = kcounter;
-					m.PP = pcounter - kcounter;
-					m.MDTP = mcounter + 1;
-					firstLine = false;
-					pcounter = 0;
-					kcounter = 0;
-					MNT.push_back({words[0], m});
-				} else if (!firstLine && insideMacro) {
-                    for (int i = 0; i < words.size(); i++) {
-                        if(words[i].at(0) == '&') {
-                            string parameter = "(P,";
-                            parameter += to_string(findParameter(words[i], name));
-                            parameter += ")";
-                            temp.push_back(parameter);
-                        } else {
-                            temp.push_back(words[i]);
-                        }
-                    }
-                    MDT.push_back(temp);
-                    temp.clear();
-                    mcounter++;
-                }
-                if (words[0] == "MEND") {
-					insideMacro = false;
+					else
+					{
+						// positional parameter
+						MNT[MNTptr].PP++;
+					}
+
+					PNTAB.push_back(Pname);
+					currPNTABptr++;
 				}
-				words.clear();
 			}
-		} else {
-			cout<<"Error opening file"<<endl;
+
+			// model statements
+			while (true)
+			{
+				MDT_entry += to_string(MDTptr - 1) + "\t";
+				// go to next line
+				getline(fin, loc, '\n');
+				cout << "=> " << loc << endl;
+
+				if (loc == "MEND")
+				{
+					MDT.push_back(to_string(MDTptr - 1) + "\tMEND");
+					MacroCount++;
+					break;
+				}
+
+				stringstream ss(loc);
+				string token;
+
+				ss >> token;
+
+				if (checkOpcode(token))
+				{
+					// mnemonic
+					MDT_entry += token + " ";
+				}
+
+				// operands
+				while (ss >> token)
+				{
+					if (token == ",")
+					{
+						MDT_entry += ", ";
+					}
+					if (token[0] == '&')
+					{
+						// parameter
+						token = token.substr(1, token.size());
+						int idx = PNTABptrs[MacroCount];
+						for (int i = idx; i < PNTAB.size(); i++)
+						{
+							if (PNTAB[i] == token)
+							{
+								MDT_entry += "(P," + to_string(idx) + ") ";
+								break;
+							}
+							idx++;
+						}
+					}
+				}
+				MDT.push_back(MDT_entry);
+				MDT_entry.erase();
+				MDTptr++;
+			}
 		}
-		file.close();
+
+		else
+		{
+			// assembly statement
+			// check for macro call to fill APTAB
+			stringstream ss(loc);
+			string token;
+			ss >> token;
+
+			if (!checkOpcode(token))
+			{
+				// not mnemonic, check macro name table
+				for (MNT_Entry entry : MNT)
+				{
+					if (token == entry.MacroName)
+					{
+						while (ss >> token)
+						{
+							if (token != ",")
+								APTAB.push_back(token);
+						}
+					}
+				}
+			}
+		}
 	}
 
-    void displayMNT() {
-        for (auto x: MNT) {
-            macro_name_table<<x.first<<" "<<x.second.KP<<" "<<x.second.PP<<" "<<x.second.KPDTP<<" "<<x.second.MDTP<<endl;
-        }
-        macro_name_table.close();
-    }
+	// write to files
+	writeMNTfile(MNT);
+	writePNTABfile(PNTAB);
+	writeKPDTABfile(KPDTAB);
+	writeAPTABfile(APTAB);
+	writeMDTfile(MDT);
 
-    void displayKPDTAB() {
-        for (auto x: KPDTAB) {
-            keyword_parameter_table<<x.first<<" "<<x.second<<endl;
-        }
-        keyword_parameter_table.close();
-    }
+	fin.close();
+}
 
-    void displayMDT() {
-        for (int i = 0; i < MDT.size(); i++) {
-            for (int j = 0; j < MDT[i].size(); j++) {
-                macro_definition_table<<MDT[i][j]<<" ";
-            }
-            macro_definition_table<<endl;
-        }
-        macro_definition_table.close();
-    }
+int main()
+{
+	string inputFile = "input.txt";
+	macro_pass_1(inputFile);
 
-    void displayPNTAB() {
-        for (auto x: PNTAB) {
-            parameter_table<<x<<endl;
-        }
-        parameter_table.close();
-    }
-};
-
-int main() {
-	MacroProcessor m;
-	m.passOne();
-    m.displayMNT();
-    m.displayKPDTAB();
-    m.displayMDT();
-    m.displayPNTAB();
 	return 0;
 }
