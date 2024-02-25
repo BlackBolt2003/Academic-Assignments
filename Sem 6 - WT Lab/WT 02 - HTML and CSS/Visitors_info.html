@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Your Information</title>
+
+    <!-- Add internal css -->
+    <style>
+      /* Style it nicely */
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 0;
+      }
+      h3 {
+        color: #333;
+        text-align: center;
+      }
+      h5 {
+        color: #333;
+        text-align: center;
+      }
+      form {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      label {
+        margin: 10px 0;
+      }
+      input {
+        padding: 10px;
+        margin: 10px 0;
+      }
+      textarea {
+        padding: 10px;
+        margin: 10px 0;
+      }
+      input[type="submit"] {
+        padding: 10px 20px;
+        background-color: #333;
+        color: #fff;
+        border: none;
+        cursor: pointer;
+      }
+      input[type="submit"]:hover {
+        background-color: #555;
+      }
+    </style>
+  </head>
+  <body>
+    <h3>Please fill out the following data</h3>
+    <h5>It will help us improve and share important updates</h5>
+    <br />
+    <form action="mailto:ashwin.taras2003@gmail.com">
+      <label> Name : </label>
+      <input type="text" />
+      <br />
+      <label> Email Address : </label>
+      <input type="email" />
+      <br />
+      <label> Enter Date : </label>
+      <input type="date" />
+      <br />
+      <label> Upload the required pdf : </label>
+      <input type="file" />
+      <br />
+      <label> Do you want to receive important notifications ? </label>
+      <input type="checkbox" />
+      <br />
+      <label> Enter Password for your account : </label>
+      <input type="password" />
+      <br />
+      <textarea
+        name="Enter your message here"
+        id=""
+        cols="30"
+        rows="4"
+      ></textarea
+      ><br />
+      <input type="submit" />
+    </form>
+  </body>
+</html>
