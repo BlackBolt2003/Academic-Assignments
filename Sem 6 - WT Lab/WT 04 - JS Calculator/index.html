@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simple Calculator</title>
+  <link rel="stylesheet" href="style.css">
+
+</head>
+<body>
+
+  <h1>Simple Calculator</h1>
+
+  <input type="text" id="result" readonly>
+
+  <br>
+
+  <button onclick="appendValue('1')">1</button>
+  <button onclick="appendValue('2')">2</button>
+  <button onclick="appendValue('3')">3</button>
+  <button onclick="appendOperator('+')">+</button>
+
+  <br>
+
+  <button onclick="appendValue('4')">4</button>
+  <button onclick="appendValue('5')">5</button>
+  <button onclick="appendValue('6')">6</button>
+  <button onclick="appendOperator('-')">-</button>
+
+  <br>
+
+  <button onclick="appendValue('7')">7</button>
+  <button onclick="appendValue('8')">8</button>
+  <button onclick="appendValue('9')">9</button>
+  <button onclick="appendOperator('*')">*</button>
+
+  <br>
+
+  <button onclick="appendValue('0')">0</button>
+  <button onclick="appendDot()">.</button>
+  <button onclick="appendOperator('/')">/</button>
+  <button onclick="calculate()">=</button>
+  <button onclick="clearInput()">C</button>
+
+  <script>
+    function appendValue(value) {
+      const resultField = document.getElementById('result');
+      resultField.value += value;
+    }
+
+    function appendDot() {
+      const resultField = document.getElementById('result');
+      const lastChar = resultField.value.slice(-1);
+
+      // Avoid adding consecutive dots
+      if (!resultField.value.includes('.') && !isNaN(lastChar)) {
+        resultField.value += '.';
+      }
+    }
+
+    function appendOperator(operator) {
+      const resultField = document.getElementById('result');
+      const lastChar = resultField.value.slice(-1);
+
+      // Avoid adding consecutive operators
+      if (!isNaN(lastChar) || lastChar === '.') {
+        resultField.value += operator;
+      }
+    }
+
+    function calculate() {
+      const resultField = document.getElementById('result');
+      try {
+        resultField.value = eval(resultField.value);
+
+        // Handle cases where eval returns undefined (e.g., when dividing by zero)
+        if (isNaN(resultField.value) || !isFinite(resultField.value)) {
+          throw new Error('Invalid input');
+        }
+      } catch (error) {
+        alert(error.message);
+        clearInput();
+      }
+    }
+
+    function clearInput() {
+      document.getElementById('result').value = '';
+    }
+  </script>
+
+</body>
+</html>

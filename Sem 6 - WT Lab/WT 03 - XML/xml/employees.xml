@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- The XML document represents information about employees in a business organization -->
+<employees>
+    <employee id="1">
+        <name>Ashwin Taras</name>
+        <department>Engineering</department>
+        <position>Software Engineer</position>
+        <salary>80000</salary>
+    </employee>
+    <employee id="2">
+        <name>Chirag Siroya</name>
+        <department>Engineering</department>
+        <position>Software Engineer</position>
+        <salary>75000</salary>
+    </employee>
+    <employee id="3">
+        <name>Aditya More</name>
+        <department>Engineering</department>
+        <position>Software Engineer</position>
+        <salary>80000</salary>
+    </employee>
+    <employee id="4">
+        <name>Samiksha Sarode</name>
+        <department>Management</department>
+        <position>HR Manager</position>
+        <salary>70000</salary>
+    </employee>
+    <employee id="5">
+        <name>Mahesh Vaswani</name>
+        <department>Management</department>
+        <position>Project manager</position>
+        <salary>85000</salary>
+    </employee>
+    <employee id="6">
+        <name>Raj Kolekar</name>
+        <department>Engineering</department>
+        <position>Software Engineer</position>
+        <salary>80000</salary>
+    </employee>
+    <employee id="7">
+        <name>Abhay Shanbhag</name>
+        <department>Management</department>
+        <position>Project manager</position>
+        <salary>85000</salary>
+    </employee>
+    <employee id="8">
+        <name>Laukika Kulkarni</name>
+        <department>Administration</department>
+        <position>Admin</position>
+        <salary>75000</salary>
+    </employee>
+    <employee id="9">
+        <name>Sumit Suryavanshi</name>
+        <department>Engineering</department>
+        <position>ML Engineer</position>
+        <salary>70000</salary>
+    </employee>
+    <employee id="10">
+        <name>Chaitralee Sane</name>
+        <department>Engineering</department>
+        <position>Cloud Engineer</position>
+        <salary>75000</salary>
+    </employee>
+</employees>
