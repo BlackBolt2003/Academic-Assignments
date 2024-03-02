@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weekly Meal Planner</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        h1 {
+            text-align: center;
+        }
+        table {
+            margin: 20px auto;
+        }
+        table, th, td {
+            border: 1px solid black;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 10px;
+        }
+        th {
+            text-align: left;
+        }
+        form {
+            text-align: center;
+            margin: 20px auto;
+        }
+        input[type="text"] {
+            padding: 10px;
+            margin: 10px;
+        }
+        button {
+            padding: 10px;
+            margin: 10px;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+            text-align: center;
+        }
+        li {
+            margin: 10px;
+            padding: 10px;
+            border: 1px solid black;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <h1>Weekly Meal Planner</h1>
+
+    <!-- Button to trigger populateMealPlan() -->
+    <button onclick="populateMealPlan()">Generate Meal Plan</button>
+
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Day</th>
+                <th>Breakfast</th>
+                <th>Lunch</th>
+                <th>Dinner</th>
+            </tr>
+        </thead>
+        <tbody id="mealPlanBody">
+            <!-- Meal plan will be dynamically populated here -->
+        </tbody>
+    </table>
+
+    <!-- Button to trigger generateAndDownloadGroceryList()
+    <button onclick="generateAndDownloadGroceryList()">Generate Grocery List</button>
+    -->
+
+    <h1>Recipe Recommendation System</h1>
+
+    <!-- Form to input available ingredients and trigger populateRecommendedRecipes() -->
+    <form id="recommendRecipeForm">
+        <label for="ingredients">Enter available ingredients:</label>
+        <input type="text" id="ingredients" name="ingredients">
+        <button type="submit">Recommend Recipe</button>
+    </form>
+
+    <h2>Recommended Recipes</h2>
+    <ul id="recommendedRecipes">
+        <!-- Recommended recipes will be dynamically populated here -->
+    </ul>
+
+    <script>
+        // Function to fetch the meal plan from the backend
+        async function fetchMealPlan() {
+            const response = await fetch('/api/meal_plan');
+            const mealPlanData = await response.json();
+            return mealPlanData;
+        }
+
+        // Function to populate the meal plan table
+        async function populateMealPlan() {
+            const mealPlanBody = document.getElementById('mealPlanBody');
+            // Clear existing content
+            mealPlanBody.innerHTML = '';
+
+            const mealPlanData = await fetchMealPlan();
+
+            mealPlanData.forEach(dayMeal => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${dayMeal.day}</td>
+                    <td>${dayMeal.breakfast}</td>
+                    <td>${dayMeal.lunch}</td>
+                    <td>${dayMeal.dinner}</td>
+                `;
+                mealPlanBody.appendChild(row);
+            });
+        }
+
+        /* // Function to make an asynchronous request to generate and download grocery list
+        async function generateAndDownloadGroceryList() {
+            // Make a fetch request to your Flask backend
+            const response = await fetch('/api/generate_grocery_list');
+
+            // Check if the request was successful (status code 200)
+            if (response.ok) {
+                // Get the response text (should be the content of the grocery list)
+                const groceryListContent = await response.text();
+
+                // Create a Blob with the content
+                const blob = new Blob([groceryListContent], { type: 'text/plain' });
+
+                // Create a link element and trigger a download
+                const link = document.createElement('a');
+                link.href = window.URL.createObjectURL(blob);
+                link.download = 'grocery_list.txt';
+                link.click();
+            } else {
+                // Handle error cases
+                console.error('Failed to generate grocery list');
+            }
+        }
+        */
+
+        // Function to fetch recommended recipes from the backend
+        async function fetchRecommendedRecipes(ingredients) {
+            const response = await fetch(`/api/recommend_recipe?ingredients=${ingredients}`);
+            const recommendedRecipes = await response.json();
+            return recommendedRecipes;
+        }
+
+        // Function to populate the recommended recipes list
+        async function populateRecommendedRecipes(event) {
+            event.preventDefault();
+            const ingredients = document.getElementById('ingredients').value;
+            const recommendedRecipes = await fetchRecommendedRecipes(ingredients);
+            const top20recipes = recommendedRecipes.slice(0, 20);
+            const recommendedRecipesList = document.getElementById('recommendedRecipes');
+            recommendedRecipesList.innerHTML = '';
+            top20recipes.forEach(recipe => {
+                const listItem = document.createElement('li');
+                listItem.textContent = recipe;
+                recommendedRecipesList.appendChild(listItem);
+            });
+        }
+
+        // Add an event listener to the form to call populateRecommendedRecipes on form submission
+        const recommendRecipeForm = document.getElementById('recommendRecipeForm');
+        recommendRecipeForm.addEventListener('submit', populateRecommendedRecipes);
+    </script>
+</body>
+</html>
